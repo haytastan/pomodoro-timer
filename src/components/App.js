@@ -5,14 +5,18 @@ import Navigation from './Navigation';
 import { firebase } from '../firebase';
 import withAuthentication from './withAuthentication';
 
-import LandingPage from './Landing';
-import SignUpPage from './SignUp';
-import SignInPage from './SignIn';
-import PasswordForgetPage from './PasswordForget';
-import HomePage from './Home';
-import AccountPage from './Account';
+import SignUpPage from './pages/SignUp';
+import SignInPage from './pages/SignIn';
+import PasswordForgetPage from './pages/PasswordForget';
+import HomePage from './pages/Home';
+import AccountPage from './pages/Account';
+import Statistic from './pages/Statistic';
+import Log from './pages/Log';
 
 import * as routes from '../constants/routes';
+import CreatePomodoro from './pomodoros/CreatePomodoro';
+
+import Navbar from './layout/Navbar'
 
 class App extends Component {
   constructor(props) {
@@ -24,24 +28,35 @@ class App extends Component {
   }
 
   componentDidMount() {
-    firebase.auth.onAuthStateChanged(authUser => {
-      authUser
-        ? this.setState({ authUser })
-        : this.setState({ authUser: null });
-    });
+    // firebase.auth.onAuthStateChanged(authUser => {
+    //   authUser
+    //     ? this.setState({ authUser })
+    //     : this.setState({ authUser: null });
+    // });
   }
   render() {
     return (
       <Router>
         <div>
-          <Navigation authUser={this.state.authUser} />
+          <Navbar />
 
           <hr/>
 
           <Route
-            exact path={routes.LANDING}
-            component={LandingPage}
+            exact path={routes.STATISTIC}
+            component={Statistic}
           />
+
+          <Route
+            exact path={routes.LOG}
+            component={Log}
+          />
+
+          <Route
+            exact path={routes.CREATEPOMODORO}
+            component={CreatePomodoro}
+          />
+
           <Route
             exact path={routes.SIGN_UP}
             component={SignUpPage}

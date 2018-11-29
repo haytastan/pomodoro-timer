@@ -8,7 +8,7 @@ const SignOutNavBar = () => {
             <div className="container">
                 <Link to='/' className="brand-logo">Pomodoro Timer</Link>
                 <ul  className="right">
-                    <li><NavLink to={routes.LANDING}>Landing</NavLink></li>
+                    <li><NavLink to={routes.STATISTIC}>Statistic</NavLink></li>
                     <li><NavLink to={routes.SIGN_IN}>Sign In</NavLink></li>
                 </ul>
             </div>

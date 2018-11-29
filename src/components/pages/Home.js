@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 
-import withAuthorization from './withAuthorization';
-import { db } from '../firebase';
+import withAuthorization from '../withAuthorization';
+import { db } from '../../firebase';
+import { Redirect } from 'react-router-dom'
+import { connect } from 'react-redux'
+import { compose } from 'redux'
+import { fireStoreConnect } from 'react-redux-firebase'
+import { createPomodoro } from '../../store/actions/pomodoroActions'
 
 import CircularProgressbar from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
@@ -14,18 +19,18 @@ class HomePage extends Component {
 
     this.state = {
       users: null,
-      minutes: '20',
+      minutes: '01',
       seconds: '00',
       isPlay: false,
       isPause: false,
       pauseMinutes: '00',
       pauseSeconds: '00',
-      shortBreakMinutes: '02',
+      shortBreakMinutes: '01',
       shortBreakSeconds: '00',
-      longBreakMinutes: '30',
+      longBreakMinutes: '01',
       longBreakSeconds: '00',
       pomodoroCounter: 0,
-      pomodoro: 'pomodoro',
+      session: 'pomodoro',
       shortBreak: false,
       isPomodoroTime: false,
       breakButtons: false,
@@ -37,9 +42,7 @@ class HomePage extends Component {
       this.startSecondValue = '';
   };
   componentDidMount() {
-    db.onceGetUsers().then(snapshot =>
-      this.setState({ users: snapshot.val() })
-    );
+    
   }
 
   handleChange = (event, logged) => {
@@ -73,6 +76,7 @@ class HomePage extends Component {
         this.setState({
             breakButtons: true
         })
+        this.props.createPomodoro(this.state)
     }
     this.secondsRemaining--
   }
@@ -115,7 +119,7 @@ startCountDown = () => {
       pomodoroCounter: this.state.pomodoroCounter + 1,
       isPomodoroTime: true,
       breakButtons: false,
-      pomodoro: 'pomodoro'
+      session: 'pomodoro'
   })
   this.intervalHandle = setInterval(this.tick, 1000);
   let time = this.startMinuteValue;
@@ -126,18 +130,17 @@ _getTakeABreak = () => {
   this.setState({
       breakButtons: false
   })
-  if(this.state.pomodoroCounter % 2 === 0){
+  if(this.state.pomodoroCounter % 4 === 0){
       this.setState({
-          pomodoro: 'longBreak'
+          session: 'long_break'
       })
       var time = this.state.longBreakMinutes;
   }else{
       this.setState({
-          pomodoro: 'shortBreak',
-          shortBreak: true
+        session: 'short_break',
+        shortBreak: true
       })
       var time = this.state.shortBreakMinutes;
-
   }
 
   this.intervalHandle = setInterval(this.tick, 1000);
@@ -172,6 +175,11 @@ renderPomodoroButtons = () => {
     var minutes = this.state.minutes
     var seconds = this.state.seconds
     var percent = (this.state.minutes * this.startMinuteValue / 100)
+    const { auth } = this.props
+    console.log("home", this.props)
+    console.log("state", this.state)
+
+    if(!auth.uid) return <Redirect to= '/signin' />
     return (
       <div id="pomodoro-app">
                 <div style={{width:300, height:300, margin: 'auto', textAlign: 'center'}}>
@@ -219,4 +227,16 @@ const UserList = ({ users }) =>
 
 const authCondition = (authUser) => !!authUser;
 
-export default withAuthorization(authCondition)(HomePage);
+const mapStateToProps = (state) => {
+    return {
+        auth: state.firebase.auth
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        createPomodoro: (pomodoro) => dispatch(createPomodoro(pomodoro))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomePage);

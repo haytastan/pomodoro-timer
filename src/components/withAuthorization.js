@@ -8,12 +8,12 @@ import * as routes from '../constants/routes';
 const withAuthorization = (authCondition) => (Component) => {
   class WithAuthorization extends React.Component {
     componentDidMount() {
-        firebase.auth.onAuthStateChanged(authUser => {
-            if (!authCondition(authUser)) {
-                this.props.history.push(routes.SIGN_IN);
-            }
-        });
-        }
+        // firebase.auth.onAuthStateChanged(authUser => {
+        //     if (!authCondition(authUser)) {
+        //         this.props.history.push(routes.SIGN_IN);
+        //     }
+        // });
+    }
     render() {
         return (
             <AuthUserContext.Consumer>

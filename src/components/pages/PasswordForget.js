@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
-import { auth } from '../firebase';
-import * as routes from '../constants/routes';
+import { auth } from '../../firebase';
+import * as routes from '../../constants/routes';
 
 const PasswordForgetPage = () =>
   <div>
@@ -49,19 +49,22 @@ class PasswordForgetForm extends Component {
     const isInvalid = email === '';
 
     return (
-      <form onSubmit={this.onSubmit}>
-        <input
-          value={this.state.email}
-          onChange={event => this.setState(byPropKey('email', event.target.value))}
-          type="text"
-          placeholder="Email Address"
-        />
-        <button disabled={isInvalid} type="submit">
-          Reset My Password
-        </button>
+      <div className="container">
+        <h5 className="grey-text text-darken-3">Password Forget</h5>
+        <form onSubmit={this.onSubmit}>
+          <input
+            value={this.state.email}
+            onChange={event => this.setState(byPropKey('email', event.target.value))}
+            type="text"
+            placeholder="Email Address"
+          />
+          <button disabled={isInvalid} type="submit">
+            Reset My Password
+          </button>
 
-        { error && <p>{error.message}</p> }
-      </form>
+          { error && <p>{error.message}</p> }
+        </form>
+      </div>
     );
   }
 }
@@ -71,7 +74,7 @@ const PasswordForgetLink = () =>
     <Link to={routes.PASSWORD_FORGET}>Forgot Password?</Link>
   </p>
 
-export default PasswordForgetPage;
+export default PasswordForgetForm;
 
 export {
   PasswordForgetForm,

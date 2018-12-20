@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import PomodoroList from '../PomodoroList';
+import PomodoroList from '../pomodoros/PomodoroList';
 import { connect } from 'react-redux'
 import { firestoreConnect } from 'react-redux-firebase'
 import { compose } from 'redux'
@@ -8,10 +8,10 @@ import { Redirect } from 'react-router-dom'
 
 class Log extends Component {
     render(){
-        console.log("Logs")
         const {pomodoros} = this.props;
         const {auth} = this.props;
         if(!auth.uid) return <Redirect to= '/signin' />
+        console.log("statisctic prop", this.props)
         return(
             <div className="container">
                 <div className="row">
@@ -32,4 +32,17 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(Log);
+export default compose(
+    connect(mapStateToProps),
+    firestoreConnect((props) => {
+        if (!props.auth.uid) return []
+        return [
+            {collection: 'pomodoros',
+            where: [
+                ['userId', '==', props.auth.uid]
+            ],
+            orderBy: ['createdAt', 'desc'],
+        }
+        ]
+    } )
+)(Log);

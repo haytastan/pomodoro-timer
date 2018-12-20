@@ -20,13 +20,6 @@ const SignedInNavBar = (props) => {
     )
 }
 
-// const mapStateToProps = () => {
-//     console.log(state)
-//     return(
-
-//     )
-// }
-
 const mapDispatchToProps = (dispatch) => {
     return {
         signOut: () => dispatch(signOut)

@@ -34,8 +34,13 @@ export const signUp = (newUser) => {
             newUser.email,
             newUser.password
         ).then((resp) => {
+            console.log("create user response", resp)
             return firestore.collection('users').doc(resp.user.uid).set({
-                username: newUser.username
+                username: newUser.username,
+                email: newUser.email,
+                pomodoro_session_time: 25,
+                short_break_time: 5,
+                long_break_time: 30
             })
         }).then(() => {
             dispatch({ type: 'SIGNUP_SUCCESS' })

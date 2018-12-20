@@ -12,6 +12,7 @@ import CircularProgressbar from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlayCircle, faPauseCircle, faStopCircle } from '@fortawesome/free-solid-svg-icons'
+import Push from 'push.js'
 
 class HomePage extends Component {
   constructor(props) {
@@ -42,7 +43,18 @@ class HomePage extends Component {
       this.startSecondValue = '';
   };
   componentDidMount() {
-    
+  }
+
+  pushNotification = () =>{
+    Push.create("Pomodoro Timer", {
+        body: "Your time is up!",
+        icon: require('../../assets/notification.png'),
+        timeout: 9000,
+        onClick: function () {
+            window.focus();
+            this.close();
+        }
+    });
   }
 
   handleChange = (event, logged) => {
@@ -76,6 +88,8 @@ class HomePage extends Component {
         this.setState({
             breakButtons: true
         })
+        console.log(this.state.session)
+        this.pushNotification()
         this.props.createPomodoro(this.state)
     }
     this.secondsRemaining--
@@ -88,8 +102,6 @@ class HomePage extends Component {
       pauseMinutes: this.state.minutes,
       pauseSeconds: this.state.seconds,
     })
-    console.log("minutes", this.state.minutes, this.state.seconds)
-    console.log("pause: ",this.state.isPause, this.state.pauseMinutes, this.state.pauseSeconds )
   }
 
 _getStop = () => {
@@ -107,8 +119,6 @@ _getContinue = () => {
         seconds: this.state.pauseSeconds,
         isPause: false,
     })
-    console.log("continue: ", this.state.minutes, this.state.minutes)
-
     this.intervalHandle = setInterval(this.tick, 1000);
 }
 
@@ -130,9 +140,10 @@ _getTakeABreak = () => {
   this.setState({
       breakButtons: false
   })
-  if(this.state.pomodoroCounter % 4 === 0){
+  if(this.state.pomodoroCounter === 4){
       this.setState({
-          session: 'long_break'
+          session: 'long_break',
+          pomodoroCounter: 0
       })
       var time = this.state.longBreakMinutes;
   }else{
@@ -149,24 +160,24 @@ _getTakeABreak = () => {
 
 renderPomodoroButtons = () => {
   return(
-      <div>
-          {
-              this.state.isPlay ?
-              <div>
-                  {
-                      this.state.isPause ?
-                      <FontAwesomeIcon icon={faPlayCircle} onClick={this._getContinue}/>
-                      :
-                      <FontAwesomeIcon icon={faPauseCircle} onClick={this._getPause} />
-                  }
-                  <FontAwesomeIcon icon={faStopCircle}  onClick={this._getStop} />
-              </div>
-              :
-              <div>
-                  <FontAwesomeIcon icon={faPlayCircle} onClick={this.startCountDown} />
-              </div>
-          }
-      </div>
+    <div>
+        {
+            this.state.isPlay ?
+            <div>
+                {
+                    this.state.isPause ?
+                    <i className="medium material-icons" onClick={this._getContinue}>play_circle_filled</i>
+                    :
+                    <i className="medium material-icons" onClick={this._getPause}>pause_circle_filled</i>
+                }
+                <i className="medium material-icons" onClick={this._getStop}>stop</i>
+            </div>
+            :
+            <div>
+                <i className="medium material-icons" onClick={this.startCountDown}>play_circle_filled</i>
+            </div>
+        }
+    </div>
   )
 }
 
@@ -176,32 +187,28 @@ renderPomodoroButtons = () => {
     var seconds = this.state.seconds
     var percent = (this.state.minutes * this.startMinuteValue / 100)
     const { auth } = this.props
-    console.log("home", this.props)
-    console.log("state", this.state)
 
     if(!auth.uid) return <Redirect to= '/signin' />
     return (
-      <div id="pomodoro-app">
+      <div className="container">
+        <div className="row">
                 <div style={{width:300, height:300, margin: 'auto', textAlign: 'center'}}>
                     <div id="timer">
-                    <div id="time">
-                <CircularProgressbar
-                    percentage={percent}
-                    text={`${minutes}:${seconds}`}
-                    />
-                        <span id="minutes">{minutes}</span>
-                        <span id="colon">:</span>
-                        <span id="seconds">{seconds}</span>
-                    </div>
-                    <div id="filler"></div>
+                        <div id="time">
+                            <CircularProgressbar
+                                percentage={99}
+                                text={`${minutes}:${seconds}`}
+                            />
+                        </div>
+                        <div id="filler"></div>
                     </div>
 
                     <div id="buttons">
                     {
                         this.state.breakButtons ?
                         <div>
-                            <button onClick={this._getTakeABreak}>Take a Break</button>
-                            <button onClick={this.startCountDown}>Continue</button>
+                            <a className="waves-effect waves-light btn" onClick={this._getTakeABreak}>Take a Break</a>&nbsp;
+                            <a className="waves-effect waves-light btn" onClick={this.startCountDown}>Continue</a>
                         </div>
                         :
                         <div>
@@ -211,6 +218,7 @@ renderPomodoroButtons = () => {
                     </div>
                 </div>
             </div>
+        </div>
     );
   }
 }

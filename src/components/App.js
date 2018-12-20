@@ -9,7 +9,7 @@ import SignUpPage from './pages/SignUp';
 import SignInPage from './pages/SignIn';
 import PasswordForgetPage from './pages/PasswordForget';
 import HomePage from './pages/Home';
-import AccountPage from './pages/Account';
+import Setting from './pages/Setting';
 import Statistic from './pages/Statistic';
 import Log from './pages/Log';
 
@@ -74,8 +74,8 @@ class App extends Component {
             component={HomePage}
           />
           <Route
-            exact path={routes.ACCOUNT}
-            component={AccountPage}
+            exact path={routes.SETTING}
+            component={Setting}
           />
         </div>
       </Router>
